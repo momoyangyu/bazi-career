@@ -143,68 +143,21 @@ var month=parseInt(document.getElementById("birthMonth").value);
 var day=parseInt(document.getElementById("birthDay").value);
 var hourVal=document.getElementById("birthHour").value;
 var gender=document.getElementById("gender").value;
-// 本地八字计算
 var tg=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 var dz=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
-var wxMap={"甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水"};
 var yearGan=tg[(year-4)%10];
 var yearZhi=dz[(year-4)%12];
 var monthGan=tg[(year*2+month+1)%10];
 var monthZhi=dz[(month+1)%12];
 var baseDate=new Date(1900,0,31);
-var targetDate=new Date(year,month-1,day);
-var days=Math.floor((targetDate.getTime()-baseDate.getTime())/86400000);
+var days=Math.floor((new Date(year,month-1,day).getTime()-baseDate.getTime())/86400000);
 var dayGan=tg[days%10];
 var dayZhi=dz[days%12];
 var hourZhi=Math.floor((parseInt(hourVal||"12")+1)/2)%12;
 var hourGan=tg[(days*2+hourZhi+1)%10];
 var genderText=gender==="0"?"乾造":"坤造";
-// 模拟API返回格式
-var baziData={
-"base_info":{"sex":genderText,"name":"命主","gongli":year+"年"+month+"月"+day+"日","nongli":"略","zhengge":""+"格"},
-"bazi_info":{"bazi":[yearGan+yearZhi,monthGan+monthZhi,dayGan+dayZhi,hourGan+hourZhi]},
-"detail_info":{"sizhu":{"year":{"tg":yearGan,"dz":yearZhi},"month":{"tg":monthGan,"dz":monthZhi},"day":{"tg":dayGan,"dz":dayZhi},"hour":{"tg":hourGan,"dz":hourZhi}}}}
-};
+var baziData={"base_info":{"sex":genderText,"name":"命主","gongli":year+"年"+month+"月"+day+"日","zhenggenull"},"bazi_info":{"bazi":[yearGan+yearZhi,monthGan+monthZhi,dayGan+dayZhi,hourGan+hourZhi]},"detail_info":{"sizhu":{"year":{"tg":yearGan,"dz":yearZhi},"month":{"tg":monthGan,"dz":monthZhi},"day":{"tg":dayGan,"dz":dayZhi},"hour":{"tg":hourGan,"dz":hourZhi}}}};
 setTimeout(function(){showResult({mbti:mbti,baziData:baziData,hourVal:hourVal})},1500);
-})
-}else{
-alert("排盘服务暂不可用，请稍后重试");
-document.getElementById("loading").classList.add("hidden");
-document.getElementById("step1").classList.remove("hidden")
-}
-};else{
-alert("排盘服务暂不可用，请稍后重试");
-document.getElementById("loading").classList.add("hidden");
-document.getElementById("step1").classList.remove("hidden")
-}
-}catch(e){
-alert("网络错误，请检查网络后重试");
-document.getElementById("loading").classList.add("hidden");
-document.getElementById("step1").classList.remove("hidden")
-}
-}
-function copyWechat(){const id='Yuxiaoxian_GX';if(navigator.clipboard){navigator.clipboard.writeText(id).then(()=>{const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)})}else{const t=document.createElement('textarea');t.value=id;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)}}
-function getBaziInfo(year,month,day){
-const tg=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-const dz=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const wxMap={'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水'};
-const yearGan=tg[(year-4)%10];
-const yearZhi=dz[(year-4)%12];
-const monthGan=tg[(year*2+month+1)%10];
-const monthZhi=dz[(month+1)%12];
-const dayBase=new Date(1900,0,31).getTime();
-const dayOffset=Math.floor((new Date(year,month-1,day).getTime()-dayBase)/86400000);
-const dayGan=tg[dayOffset%10];
-const dayZhi=dz[dayOffset%12];
-const dayWx=wxMap[dayGan];
-const shas={'甲':['文昌','将星'],'乙':['天乙','福星'],'丙':['禄神','红艳'],'丁':['天德','月德'],'戊':['华盖','羊刃'],'己':['太极','学堂'],'庚':['将星','劫煞'],'辛':['文昌','桃花'],'壬':['天乙','驿马'],'癸':['天德','华盖']};
-return{year:yearGan+yearZhi,month:monthGan+monthZhi,day:dayGan+dayZhi,dayGan:dayGan,dayZhi:dayZhi,dayWx:dayWx,shas:shas[dayGan]||[]};
-}
-function getWxAnalysis(wx,shas){
-const wxCareer={'金':'适合金融、法律、管理、军警、外科医生等需要决断力和执行力的职业','木':'适合教育、文化、出版、设计、环保、农业等需要创造力和耐心的职业','水':'适合贸易、物流、旅游、传媒、咨询、心理咨询等需要沟通力和变通力的职业','火':'适合演艺、公关、营销、餐饮、能源、科技等需要热情和感染力的职业','土':'适合房地产、建筑、农业、金融、人力资源等需要稳重和包容力的职业'};
-const shaCareer={'文昌':'学业事业双收，适合文化、教育、研究领域','将星':'领导才能，适合管理、军警、企业高管','天乙':'贵人运强，适合需要人脉资源的行业','福星':'福气深厚，适合稳健型职业','禄神':'财运亨通，适合经商、投资','红艳':'人缘好，适合公关、演艺、销售','天德':'德行高尚，适合医疗、慈善、教育','月德':'贵人相助，适合合作型工作','华盖':'才华出众，适合艺术、玄学、研究','羊刃':'有冲劲，适合创业、竞争激烈的行业','太极':'悟性高，适合哲学、宗教、命理','学堂':'学习能力强，适合需要持续学习的职业','劫煞':'有魄力，适合开拓性工作','桃花':'人缘好，适合服务业、公关','驿马':'变动多，适合出差、外派、国际贸易'};
-let shaText=shas.map(s=>`· ${s}：${shaCareer[s]||'有特殊助力'}`).join('<br>');
-return{wxCareer:wxCareer[wx]||'适合多元化发展',shaCareer:shaText};
 }
 function showResult(data){
 document.getElementById("loading").classList.add("hidden");
