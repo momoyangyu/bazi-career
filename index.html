@@ -158,7 +158,7 @@ alert("网络错误，请检查网络后重试");
 document.getElementById("loading").classList.add("hidden");
 document.getElementById("step1").classList.remove("hidden")
 }
-};setTimeout(()=>{showResult(birthData)},2500)}
+}
 function copyWechat(){const id='Yuxiaoxian_GX';if(navigator.clipboard){navigator.clipboard.writeText(id).then(()=>{const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)})}else{const t=document.createElement('textarea');t.value=id;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)}}
 function getBaziInfo(year,month,day){
 const tg=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
