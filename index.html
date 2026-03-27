@@ -134,21 +134,45 @@ function selectOption(e,s){document.querySelectorAll('.radio-option').forEach(el
 function nextQuestion(){if(answers[currentQuestion]===undefined){alert('请选择一个选项');return}mbtiScore[answers[currentQuestion]]++;if(currentQuestion<questions.length-1){currentQuestion++;showQuestion(currentQuestion)}else{generateReport()}}
 function goToStep2(){const y=document.getElementById('birthYear').value,m=document.getElementById('birthMonth').value,d=document.getElementById('birthDay').value;if(!y||!m||!d){alert('请填写完整的出生日期');return}document.getElementById('step1').classList.add('hidden');document.getElementById('step2').classList.remove('hidden');showQuestion(0)}
 function calculateMBTI(){return(mbtiScore.E>=mbtiScore.I?'E':'I')+(mbtiScore.S>=mbtiScore.N?'S':'N')+(mbtiScore.T>=mbtiScore.F?'T':'F')+(mbtiScore.J>=mbtiScore.P?'J':'P')}
-async function generateReport(){
+function generateReport(){
 document.getElementById("step2").classList.add("hidden");
 document.getElementById("loading").classList.remove("hidden");
 var mbti=calculateMBTI();
-var year=document.getElementById("birthYear").value,month=document.getElementById("birthMonth").value,day=document.getElementById("birthDay").value;
-var hourVal=document.getElementById("birthHour").value||"",gender=document.getElementById("gender").value,calType=document.getElementById("calendarType").value;
-var hourMap={"":"12","0":"0","1":"2","2":"4","3":"6","4":"8","5":"10","6":"12","7":"14","8":"16","9":"18","10":"20","11":"22"};
-var hours=hourMap[hourVal]||"12";
-try{
-var params="api_key=OZmxqkQCzwmVwz9uQKulp2kYE&name=命主&sex="+gender+"&type="+calType+"&year="+year+"&month="+month+"&day="+day+"&hours="+hours+"&minute=30";
-var resp=await fetch("https://api.yuanfenju.com/index.php/v1/Bazi/paipan",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:params});
-var result=await resp.json();
-if(result.errcode===0){
-showResult({mbti:mbti,baziData:result.data,hourVal:hourVal})
+var year=parseInt(document.getElementById("birthYear").value);
+var month=parseInt(document.getElementById("birthMonth").value);
+var day=parseInt(document.getElementById("birthDay").value);
+var hourVal=document.getElementById("birthHour").value;
+var gender=document.getElementById("gender").value;
+// 本地八字计算
+var tg=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+var dz=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+var wxMap={"甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水"};
+var yearGan=tg[(year-4)%10];
+var yearZhi=dz[(year-4)%12];
+var monthGan=tg[(year*2+month+1)%10];
+var monthZhi=dz[(month+1)%12];
+var baseDate=new Date(1900,0,31);
+var targetDate=new Date(year,month-1,day);
+var days=Math.floor((targetDate.getTime()-baseDate.getTime())/86400000);
+var dayGan=tg[days%10];
+var dayZhi=dz[days%12];
+var hourZhi=Math.floor((parseInt(hourVal||"12")+1)/2)%12;
+var hourGan=tg[(days*2+hourZhi+1)%10];
+var genderText=gender==="0"?"乾造":"坤造";
+// 模拟API返回格式
+var baziData={
+"base_info":{"sex":genderText,"name":"命主","gongli":year+"年"+month+"月"+day+"日","nongli":"略","zhengge":""+"格"},
+"bazi_info":{"bazi":[yearGan+yearZhi,monthGan+monthZhi,dayGan+dayZhi,hourGan+hourZhi]},
+"detail_info":{"sizhu":{"year":{"tg":yearGan,"dz":yearZhi},"month":{"tg":monthGan,"dz":monthZhi},"day":{"tg":dayGan,"dz":dayZhi},"hour":{"tg":hourGan,"dz":hourZhi}}}}
+};
+setTimeout(function(){showResult({mbti:mbti,baziData:baziData,hourVal:hourVal})},1500);
+})
 }else{
+alert("排盘服务暂不可用，请稍后重试");
+document.getElementById("loading").classList.add("hidden");
+document.getElementById("step1").classList.remove("hidden")
+}
+};else{
 alert("排盘服务暂不可用，请稍后重试");
 document.getElementById("loading").classList.add("hidden");
 document.getElementById("step1").classList.remove("hidden")
