@@ -178,14 +178,15 @@ var wx=wxInfo[dayGan]||{wx:'未知',color:'#666',icon:'❓',career:'待定',stre
 var bi=bazi.base_info;
 var bzi=bazi.bazi_info.bazi;
 var gender=bi.sex||'乾造';
+var strengthText=info.strengths?info.strengths.slice(0,4).join('、'):'待分析';
+var careerText=careers?careers.slice(0,3).join('、'):'待定';
 document.getElementById("resultContent").innerHTML=
 '<div class="result-hero"><div class="result-type-badge">'+wx.icon+' 日主'+dayGan+'（'+wx.wx+'）</div><div class="result-type-name">'+info.name+'</div><div class="result-type-tagline">'+type+' · '+gender+' · '+bzi.join(' ')+'</div></div>'+
 '<div class="result-body">'+
-'<div class="result-section"><div class="result-title">一、MBTI性格解读</div><div class="result-content"><p>'+info.summary+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">二、行为模式与职场表现</div><div class="result-content"><p>'+info.behavior||'你在工作中倾向于'+type+'类型的行为模式，具有'+info.strengths.slice(0,2).join('、')+'等特点。'+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">三、八字能量配置</div><div class="result-content"><p><b>日主'+dayGan+'属'+wx.wx+'</b>，'+wx.desc+'</p><p>'+wx.behavior+'</p><div class="strength-grid">'+wx.strengths.map(s=>'<div class="strength-item"><div class="strength-name">'+s+'</div></div>').join('')+'</div></div></div>'+
-'<div class="result-section"><div class="result-title">四、职业天赋与方向</div><div class="result-content"><p>你的MBTI类型适合：'+careers.slice(0,3).join('、')+'</p><p>你的八字'+wx.wx+'性适合：'+wx.career+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">五、成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item">'+info.growth+'</div></div></div>'+
+'<div class="result-section"><div class="result-title">一、MBTI性格解读</div><div class="result-content"><p>'+info.summary+'</p><p style="margin-top:10px"><b>核心优势：</b>'+strengthText+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">二、八字能量配置</div><div class="result-content"><p><b>日主'+dayGan+'属'+wx.wx+'</b>，'+wx.desc+'</p><p style="margin-top:8px">'+wx.behavior+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">三、职业天赋与方向</div><div class="result-content"><p><b>MBTI推荐：</b>'+careerText+'</p><p style="margin-top:8px"><b>八字'+wx.wx+'性适合：</b>'+wx.career+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">四、成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item">'+info.growth+'</div></div></div>'+
 '<div class="cta-box"><h3>📚 深入了解你的职场命理</h3><p class="cta-desc">加微信备注<b>「职场」</b>，可获取：</p><p class="cta-desc">• 八字大运流年深度分析<br>• 专属职业规划建议<br>• 一对一命理咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
 '</div>'
 }
