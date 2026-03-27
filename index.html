@@ -120,7 +120,7 @@
         <div id="result" class="page hidden">
             <div class="header"><h1>你的职场本命报告</h1></div>
             <div class="card" style="padding:0;overflow:hidden"><div id="resultContent"></div></div>
-            <div class="cta-box"><h3>🌟 识人识己，方能乘势而为</h3><p style="text-align:left;line-height:2"><b>✦ 八字大运流年分析</b><br><b>✦ 奇门遁甲决策咨询</b><br><b>✦ 事业财运深度解读</b></p><div class="wechat-divider"></div><p style="font-size:13px;line-height:1.8;opacity:0.95">加微信，进入<b>「知命·职场星球」</b><br>📚 系统学习命理识人课程<br>🔮 一对一咨询服务</p><div class="wechat-tip" style="margin-top:12px">添加微信 · 备注「职场」</div><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>
+            <div class="cta-box"><h3>🌟 命理服务 · 微信咨询</h3><p style="text-align:left;line-height:2"><b>✦ 八字大运流年分析</b><br><b>✦ 奇门遁甲决策咨询</b><br><b>✦ 事业财运深度解读</b></p><div class="wechat-divider"></div><p style="font-size:13px;line-height:1.8;opacity:0.95">加微信，进入<b>「知命·职场星球」</b><br>📚 系统学习命理识人课程<br>🔮 一对一咨询服务</p><div class="wechat-tip" style="margin-top:12px">添加微信 · 备注「职场」</div><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>
         </div>
     </div>
     <script>
@@ -141,23 +141,23 @@ const mbti=calculateMBTI();
 const year=document.getElementById('birthYear').value;
 const month=document.getElementById('birthMonth').value;
 const day=document.getElementById('birthDay').value;
-const hourVal=document.getElementById('birthHour').value;
+const hourVal=document.getElementById('birthHour').value||'';
 const gender=document.getElementById('gender').value;
 const calType=document.getElementById('calendarType').value;
-// 时辰转换为小时（取时辰中间值）
+// 时辰转小时（子时=0, 丑时=1...亥时=11），取中间值加30分钟
 const hourMap={'':'12','0':'0','1':'2','2':'4','3':'6','4':'8','5':'10','6':'12','7':'14','8':'16','9':'18','10':'20','11':'22'};
 const hours=hourMap[hourVal]||'12';
 try{
-const params=new URLSearchParams({api_key:'OZmxqkQCzwmVwz9uQKulp2kYE',name:'命主',sex:gender,type:calType,year,month,day,hours,minute:'0'});
+const params=new URLSearchParams({api_key:'OZmxqkQCzwmVwz9uQKulp2kYE',name:'命主',sex:gender,type:calType,year,month,day,hours,minute:'30'});
 const resp=await fetch('https://api.yuanfenju.com/index.php/v1/Bazi/paipan',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:params.toString()});
 const result=await resp.json();
 if(result.errcode===0){
-showResult({mbti,mbtiScore,baziData:result.data});
+showResult({mbti,mbtiScore,baziData:result.data,hourVal});
 }else{
-showResult({mbti,mbtiScore,baziData:null});
+showResult({mbti,mbtiScore,baziData:null,hourVal});
 }
 }catch(e){
-showResult({mbti,mbtiScore,baziData:null});
+showResult({mbti,mbtiScore,baziData:null,hourVal});
 }
 }
 function copyWechat(){const id='Yuxiaoxian_GX';if(navigator.clipboard){navigator.clipboard.writeText(id).then(()=>{const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)})}else{const t=document.createElement('textarea');t.value=id;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)}}
@@ -206,75 +206,74 @@ if(b){
 const bi=b.base_info;
 const bz=b.bazi_info;
 const di=b.detail_info;
-const si=b.start_info;
-// 日主信息
 const dayTg=di.sizhu.day.tg;
 const wxMap={'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水'};
 const dayWx=wxMap[dayTg]||'';
 const wxColor={'金':'#C9B037','木':'#4CAF50','水':'#2196F3','火':'#FF5722','土':'#795548'};
 const wxIcon={'金':'⚔️','木':'🌳','水':'🌊','火':'🔥','土':'⛰️'};
 const wxCareer={'金':'适合金融、法律、管理、军警、外科医生等需要决断力和执行力的职业','木':'适合教育、文化、出版、设计、环保等需要创造力和耐心的职业','水':'适合贸易、物流、传媒、咨询、心理咨询等需要沟通力和变通力的职业','火':'适合演艺、公关、营销、科技等需要热情和感染力的职业','土':'适合房地产、建筑、金融、人力资源等需要稳重和包容力的职业'};
-// 神煞分析（取日柱神煞）
-const dayShensha=di.shensha.day||'';
-const goodShas=['天乙贵人','天德贵人','月德贵人','文昌贵人','太极贵人','福星贵人','将星','国印贵人','禄神','驿马','华盖'];
-const badShas=['劫煞','孤鸾煞','元辰','空亡','羊刃'];
-const shaCareerMap={'天乙贵人':'贵人运极强，适合需要人脉和资源整合的行业','天德贵人':'德行高尚，适合医疗、教育、公益领域','月德贵人':'贵人相助，适合合作型、服务型工作','文昌贵人':'学业事业双收，适合文化、教育、研究、写作','太极贵人':'悟性极高，适合哲学、命理、策划、研究','福星贵人':'福气深厚，适合稳健型职业发展','将星':'天生领导气质，适合管理、军警、企业高管','国印贵人':'权威气场，适合政府、管理、法律领域','禄神':'财运亨通，适合经商、投资、财务','驿马':'变动中求财，适合出差、外贸、旅游、销售','华盖':'才华出众，适合艺术、玄学、研究、独立创作','劫煞':'有冲劲魄力，适合创业、竞争激烈的行业','羊刃':'执行力强，适合技术、外科、军事领域'};
-const shaList=dayShensha.split(' ').filter(s=>s.trim());
-const goodShaList=shaList.filter(s=>goodShas.some(g=>s.includes(g)));
-const shaAnalysis=goodShaList.slice(0,3).map(s=>{const key=goodShas.find(g=>s.includes(g));return key?`<div class="growth-item"><span class="growth-icon">✦</span><span><b>${s}</b>：${shaCareerMap[key]||'有特殊助力'}</span></div>`:''}).join('');
-// 大运信息
-const dayun=b.dayun_info;
+// 日柱神煞
+const dayShensha=(di.shensha.day||'').split(' ').filter(s=>s.trim());
+const goodShas={'天乙贵人':'贵人运极强，适合需要人脉和资源整合的行业','天德贵人':'德行高尚，适合医疗、教育、公益领域','月德贵人':'贵人相助，适合合作型、服务型工作','文昌贵人':'学业事业双收，适合文化、教育、研究、写作','太极贵人':'悟性极高，适合哲学、命理、策划、研究','福星贵人':'福气深厚，适合稳健型职业发展','将星':'天生领导气质，适合管理、军警、企业高管','国印贵人':'权威气场，适合政府、管理、法律领域','禄神':'财运亨通，适合经商、投资','驿马':'变动中求财，适合出差、外贸','华盖':'才华出众，适合艺术、玄学、研究、独立创作'};
+const shaAnalysis=dayShensha.filter(s=>Object.keys(goodShas).some(k=>s.includes(k))).slice(0,3).map(s=>{const k=Object.keys(goodShas).find(x=>s.includes(x));return`<div class="growth-item"><span class="growth-icon">✦</span><span><b>${s}</b>：${goodShas[k]}</b></span></div>`}).join('');
+// 十神
+const tgGods=bz.tg_cg_god||[];
+const zhuxing=di.zhuxing||{};
+// 大运
+const dayun=b.dayun_info||{};
 const currentYear=new Date().getFullYear();
 let currentDayun='',nextDayun='';
+if(dayun.big_start_year){
 for(let i=0;i<dayun.big_start_year.length;i++){
 if(currentYear>=dayun.big_start_year[i]&&currentYear<=dayun.big_end_year[i]){
-currentDayun=`${dayun.big[i]}（${dayun.big_god[i]}，${dayun.big_start_year[i]}-${dayun.big_end_year[i]}）`;
-if(i+1<dayun.big.length)nextDayun=`${dayun.big[i+1]}（${dayun.big_god[i+1]}，${dayun.big_start_year[i+1]}-${dayun.big_end_year[i+1]}）`;
+currentDayun=`${dayun.big[i]}（${dayun.big_god[i]}运，${dayun.big_start_year[i]}-${dayun.big_end_year[i]}）`;
+if(i+1<dayun.big.length)nextDayun=`${dayun.big[i+1]}（${dayun.big_god[i+1]}运，${dayun.big_start_year[i+1]}-${dayun.big_end_year[i+1]}）`;
 break;
 }
 }
-// 格局
-const zhengge=bi.zhengge||'';
+}
+// 时辰分钟处理
+const hourMin=hourVal===''?'0':hourVal;
+const hourDisplay={'0':'子时','1':'丑时','2':'寅时','3':'卯时','4':'辰时','5':'巳时','6':'午时','7':'未时','8':'申时','9':'酉时','10':'戌时','11':'亥时'}[hourVal]||'午时';
 baziHtml=`
 <div class="result-hero">
-<div class="result-type-badge">${wxIcon[dayWx]||'🔮'} 日主${dayTg}${dayWx}</div>
+<div class="result-type-badge">${wxIcon[dayWx]||'🔮'} 日主${dayTg}（${dayWx}）</div>
 <div class="result-type-name">你的职场本命</div>
-<div class="result-type-tagline">八字：${bz.bazi.join(' ')} · ${bi.zhengge}</div>
+<div class="result-type-tagline">${bz.bazi.join(' ')} · ${bi.zhengge}</div>
 </div>
 <div class="result-body">
 <div class="result-section">
-<div class="result-title">性格特质分析</div>
+<div class="result-title">性格特质解析</div>
 <div class="result-content"><p>${info.summary}</p><div class="quote-box">"${info.quote}"</div></div>
 </div>
 <div class="result-section">
-<div class="result-title">五行命理与职业</div>
+<div class="result-title">命理五行分析</div>
 <div class="result-content">
-<p><b style="color:${wxColor[dayWx]||'#764ba2'}">日主${dayTg}属${dayWx}</b>，${wxCareer[dayWx]||''}</p>
-<p style="margin-top:8px">纳音：<b>${bz.na_yin[2]}</b> · 格局：<b>${zhengge}</b></p>
+<p><b style="color:${wxColor[dayWx]}">${dayTg}火日元</b>，${wxCareer[dayWx]}</p>
+<p style="margin-top:8px">格局：<b>${bi.zhengge}</b> · 纳音：<b>${bz.na_yin[2]}</b> · 时辰：<b>${hourDisplay}</b></p>
+<p style="margin-top:8px"><b>四柱十神：</b></p>
+<p style="font-size:12px;color:#666;line-height:1.8">
+年柱 <b>${bz.bazi[0]}</b> ${tgGods[0]||''} · 
+月柱 <b>${bz.bazi[1]}</b> ${tgGods[1]||''} · 
+日主 <b>${bz.bazi[2]}</b> ${tgGods[2]||''} · 
+时柱 <b>${bz.bazi[3]}</b> ${tgGods[3]||''}
+</p>
 <p style="margin-top:8px"><b>你的核心优势：</b></p>
 <div class="strength-grid">${info.strengths.map(s=>`<div class="strength-item"><div class="strength-name">${s}</div></div>`).join('')}</div>
 </div>
 </div>
 <div class="result-section">
-<div class="result-title">神煞与职业指引</div>
+<div class="result-title">命中吉神</div>
 <div class="result-content">
 <div class="growth-box" style="background:#f8f4ff">
-<div class="growth-title" style="color:#764ba2">✨ 命中吉神</div>
 ${shaAnalysis||'<div class="growth-item"><span>命中神煞需结合完整八字深度解读</span></div>'}
-</div>
 </div>
 </div>
 ${currentDayun?`<div class="result-section">
 <div class="result-title">大运走势</div>
 <div class="result-content">
-<div class="tip-box">
-<div class="tip-title">📅 当前大运</div>
-<div class="tip-text">${currentDayun}</div>
-</div>
-${nextDayun?`<div class="tip-box" style="margin-top:8px;background:#f0fff4">
-<div class="tip-title" style="color:#2e7d32">🔮 下一大运</div>
-<div class="tip-text">${nextDayun}</div>
-</div>`:''}
+<div class="tip-box"><div class="tip-title">📅 当前大运</div><div class="tip-text">${currentDayun}</div></div>
+${nextDayun?`<div class="tip-box" style="margin-top:8px;background:#f0fff4"><div class="tip-title" style="color:#2e7d32">🔮 下一大运</div><div class="tip-text">${nextDayun}</div></div>`:''}
 </div>
 </div>`:''}
 <div class="result-section">
@@ -284,16 +283,18 @@ ${careers.map((c,i)=>`<div class="career-card"><div><span class="career-rank">${
 <div class="result-section">
 <div class="result-title">成长建议</div>
 <div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item"><span class="growth-icon">→</span><span>${info.growth}</span></div></div>
-<div class="tip-box"><div class="tip-title">🌟 职场小贴士</div><div class="tip-text">发挥你${dayWx}性日主的特质，善用命中吉神的助力，事业会更顺遂！</div></div>
+<div class="tip-box"><div class="tip-title">🌟 职场小贴士</div><div class="tip-text">发挥你${dayWx}性日主的特质，顺势而为，事业会更顺遂！</div></div>
 </div>
 </div>`;
 }else{
 // API失败时降级展示
 const bazi=getBaziInfo(parseInt(document.getElementById('birthYear').value),parseInt(document.getElementById('birthMonth').value),parseInt(document.getElementById('birthDay').value));
+const hourVal=data.hourVal||'';
+const hourDisplay={'':'未知','0':'子时','1':'丑时','2':'寅时','3':'卯时','4':'辰时','5':'巳时','6':'午时','7':'未时','8':'申时','9':'酉时','10':'戌时','11':'亥时'}[hourVal]||'午时';
 const wxColor={'金':'#C9B037','木':'#4CAF50','水':'#2196F3','火':'#FF5722','土':'#795548'};
 const wxIcon={'金':'⚔️','木':'🌳','水':'🌊','火':'🔥','土':'⛰️'};
 const wxCareer={'金':'适合金融、法律、管理、军警等需要决断力的职业','木':'适合教育、文化、设计等需要创造力的职业','水':'适合贸易、传媒、咨询等需要沟通力的职业','火':'适合演艺、公关、营销等需要感染力的职业','土':'适合房地产、建筑、人力资源等需要稳重的职业'};
-baziHtml=`<div class="result-hero"><div class="result-type-badge">${wxIcon[bazi.dayWx]} 日主${bazi.dayGan}${bazi.dayWx}</div><div class="result-type-name">你的职场本命</div><div class="result-type-tagline">八字：${bazi.year} ${bazi.month} ${bazi.day}</div></div><div class="result-body"><div class="result-section"><div class="result-title">性格特质分析</div><div class="result-content"><p>${info.summary}</p><div class="quote-box">"${info.quote}"</div></div></div><div class="result-section"><div class="result-title">五行命理与职业</div><div class="result-content"><p><b style="color:${wxColor[bazi.dayWx]}">日主${bazi.dayGan}属${bazi.dayWx}</b>，${wxCareer[bazi.dayWx]}</p><div class="strength-grid">${info.strengths.map(s=>`<div class="strength-item"><div class="strength-name">${s}</div></div>`).join('')}</div></div></div><div class="result-section"><div class="result-title">职业方向推荐</div>${careers.map((c,i)=>`<div class="career-card"><div><span class="career-rank">${i+1}</span><span class="career-title">${c.title}</span></div><div class="career-reason">${c.reason}</div></div>`).join('')}</div><div class="result-section"><div class="result-title">成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item"><span class="growth-icon">→</span><span>${info.growth}</span></div></div></div></div>`;
+baziHtml=`<div class="result-hero"><div class="result-type-badge">${wxIcon[bazi.dayWx]||'🔮'} 日主${bazi.dayGan}（${bazi.dayWx}）</div><div class="result-type-name">你的职场本命</div><div class="result-type-tagline">${bazi.year} ${bazi.month} ${bazi.day} · ${hourDisplay}</div></div><div class="result-body"><div class="result-section"><div class="result-title">性格特质分析</div><div class="result-content"><p>${info.summary}</p><div class="quote-box">"${info.quote}"</div></div></div><div class="result-section"><div class="result-title">命理五行</div><div class="result-content"><p><b style="color:${wxColor[bazi.dayWx]}">日主${bazi.dayGan}属${bazi.dayWx}</b>，${wxCareer[bazi.dayWx]}</p><div class="strength-grid">${info.strengths.map(s=>`<div class="strength-item"><div class="strength-name">${s}</div></div>`).join('')}</div></div></div><div class="result-section"><div class="result-title">职业方向推荐</div>${careers.map((c,i)=>`<div class="career-card"><div><span class="career-rank">${i+1}</span><span class="career-title">${c.title}</span></div><div class="career-reason">${c.reason}</div></div>`).join('')}</div><div class="result-section"><div class="result-title">成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item"><span class="growth-icon">→</span><span>${info.growth}</span></div></div></div></div>`;
 }
 document.getElementById('resultContent').innerHTML=baziHtml;
 }
