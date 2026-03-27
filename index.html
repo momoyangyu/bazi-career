@@ -134,7 +134,31 @@ function selectOption(e,s){document.querySelectorAll('.radio-option').forEach(el
 function nextQuestion(){if(answers[currentQuestion]===undefined){alert('请选择一个选项');return}mbtiScore[answers[currentQuestion]]++;if(currentQuestion<questions.length-1){currentQuestion++;showQuestion(currentQuestion)}else{generateReport()}}
 function goToStep2(){const y=document.getElementById('birthYear').value,m=document.getElementById('birthMonth').value,d=document.getElementById('birthDay').value;if(!y||!m||!d){alert('请填写完整的出生日期');return}document.getElementById('step1').classList.add('hidden');document.getElementById('step2').classList.remove('hidden');showQuestion(0)}
 function calculateMBTI(){return(mbtiScore.E>=mbtiScore.I?'E':'I')+(mbtiScore.S>=mbtiScore.N?'S':'N')+(mbtiScore.T>=mbtiScore.F?'T':'F')+(mbtiScore.J>=mbtiScore.P?'J':'P')}
-async function generateReport(){document.getElementById('step2').classList.add('hidden');document.getElementById('loading').classList.remove('hidden');const mbti=calculateMBTI();const birthData={year:document.getElementById('birthYear').value,month:document.getElementById('birthMonth').value,day:document.getElementById('birthDay').value,hour:document.getElementById('birthHour').value,gender:document.getElementById('gender').value,mbti:mbti,mbtiScore:mbtiScore};setTimeout(()=>{showResult(birthData)},2500)}
+async function generateReport(){
+document.getElementById("step2").classList.add("hidden");
+document.getElementById("loading").classList.remove("hidden");
+var mbti=calculateMBTI();
+var year=document.getElementById("birthYear").value,month=document.getElementById("birthMonth").value,day=document.getElementById("birthDay").value;
+var hourVal=document.getElementById("birthHour").value||"",gender=document.getElementById("gender").value,calType=document.getElementById("calendarType").value;
+var hourMap={"":"12","0":"0","1":"2","2":"4","3":"6","4":"8","5":"10","6":"12","7":"14","8":"16","9":"18","10":"20","11":"22"};
+var hours=hourMap[hourVal]||"12";
+try{
+var params="api_key=OZmxqkQCzwmVwz9uQKulp2kYE&name=命主&sex="+gender+"&type="+calType+"&year="+year+"&month="+month+"&day="+day+"&hours="+hours+"&minute=30";
+var resp=await fetch("https://api.yuanfenju.com/index.php/v1/Bazi/paipan",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:params});
+var result=await resp.json();
+if(result.errcode===0){
+showResult({mbti:mbti,baziData:result.data,hourVal:hourVal})
+}else{
+alert("排盘服务暂不可用，请稍后重试");
+document.getElementById("loading").classList.add("hidden");
+document.getElementById("step1").classList.remove("hidden")
+}
+}catch(e){
+alert("网络错误，请检查网络后重试");
+document.getElementById("loading").classList.add("hidden");
+document.getElementById("step1").classList.remove("hidden")
+}
+};setTimeout(()=>{showResult(birthData)},2500)}
 function copyWechat(){const id='Yuxiaoxian_GX';if(navigator.clipboard){navigator.clipboard.writeText(id).then(()=>{const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)})}else{const t=document.createElement('textarea');t.value=id;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);const btn=document.querySelector('.copy-btn');btn.textContent='已复制 ✓';setTimeout(()=>btn.textContent='复制微信号',2000)}}
 function getBaziInfo(year,month,day){
 const tg=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
@@ -159,16 +183,35 @@ let shaText=shas.map(s=>`· ${s}：${shaCareer[s]||'有特殊助力'}`).join('<b
 return{wxCareer:wxCareer[wx]||'适合多元化发展',shaCareer:shaText};
 }
 function showResult(data){
-document.getElementById('loading').classList.add('hidden');
-document.getElementById('result').classList.remove('hidden');
-const type=data.mbti;
-const info=mbtiData[type];
-const careers=careerRecommendations[type]||[];
-const bazi=getBaziInfo(parseInt(data.year),parseInt(data.month),parseInt(data.day));
-const wxInfo=getWxAnalysis(bazi.dayWx,bazi.shas);
-const wxColor={'金':'#C9B037','木':'#4CAF50','水':'#2196F3','火':'#FF5722','土':'#795548'};
-const wxIcon={'金':'⚔️','木':'🌳','水':'🌊','火':'🔥','土':'⛰️'};
-document.getElementById('resultContent').innerHTML=`<div class="result-hero"><div class="result-type-badge">${wxIcon[bazi.dayWx]} 日主${bazi.dayGan}${bazi.dayWx}</div><div class="result-type-name">你的职场本命</div><div class="result-type-tagline">八字：${bazi.year} ${bazi.month} ${bazi.day}</div></div><div class="result-body"><div class="result-section"><div class="result-title">性格特质</div><div class="result-content"><p>${info.summary}</p><div class="quote-box">"${info.quote}"</div></div></div><div class="result-section"><div class="result-title">五行与职业</div><div class="result-content"><p><b style="color:${wxColor[bazi.dayWx]}">日主${bazi.dayGan}属${bazi.dayWx}</b>，${wxInfo.wxCareer}</p><p style="margin-top:12px"><b>你的核心优势：</b></p><div class="strength-grid">${info.strengths.map(s=>`<div class="strength-item"><div class="strength-name">${s}</div></div>`).join('')}</div></div></div><div class="result-section"><div class="result-title">神煞与职业指引</div><div class="result-content"><p style="font-size:13px;line-height:2">${wxInfo.shaCareer}</p></div></div><div class="result-section"><div class="result-title">职业方向推荐</div>${careers.map((c,i)=>`<div class="career-card"><div><span class="career-rank">${i+1}</span><span class="career-title">${c.title}</span></div><div class="career-reason">${c.reason}</div></div>`).join('')}</div><div class="result-section"><div class="result-title">成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item"><span class="growth-icon">→</span><span>${info.growth}</span></div></div><div class="tip-box"><div class="tip-title">🌟 职场小贴士</div><div class="tip-text">找到与你性格契合的工作环境比单纯追求高薪更重要。发挥你的${bazi.dayWx}性特质，善用${bazi.shas.join('、')}的助力，事业会更顺遂！</div></div></div></div>`}
+document.getElementById("loading").classList.add("hidden");
+document.getElementById("result").classList.remove("hidden");
+var type=data.mbti;
+var info=mbtiData[type];
+var careers=careerRecommendations[type]||[];
+var bazi=data.baziData;
+if(!bazi){
+document.getElementById("resultContent").innerHTML="<div style='padding:40px;text-align:center;'><p>报告生成失败，请重试</p></div>";
+return
+}
+var di=bazi.detail_info.sizhu;
+var wxMap={'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水'};
+var dayGan=di.day.tg;
+var dayWx=wxMap[dayGan];
+var wx=wxInfo[dayGan]||{wx:'未知',color:'#666',icon:'❓',career:'待定',strengths:[],behavior:''};
+var bi=bazi.base_info;
+var bzi=bazi.bazi_info.bazi;
+var gender=bi.sex||'乾造';
+document.getElementById("resultContent").innerHTML=
+'<div class="result-hero"><div class="result-type-badge">'+wx.icon+' 日主'+dayGan+'（'+wx.wx+'）</div><div class="result-type-name">'+info.name+'</div><div class="result-type-tagline">'+type+' · '+gender+' · '+bzi.join(' ')+'</div></div>'+
+'<div class="result-body">'+
+'<div class="result-section"><div class="result-title">一、MBTI性格解读</div><div class="result-content"><p>'+info.summary+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">二、行为模式与职场表现</div><div class="result-content"><p>'+info.behavior||'你在工作中倾向于'+type+'类型的行为模式，具有'+info.strengths.slice(0,2).join('、')+'等特点。'+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">三、八字能量配置</div><div class="result-content"><p><b>日主'+dayGan+'属'+wx.wx+'</b>，'+wx.desc+'</p><p>'+wx.behavior+'</p><div class="strength-grid">'+wx.strengths.map(s=>'<div class="strength-item"><div class="strength-name">'+s+'</div></div>').join('')+'</div></div></div>'+
+'<div class="result-section"><div class="result-title">四、职业天赋与方向</div><div class="result-content"><p>你的MBTI类型适合：'+careers.slice(0,3).join('、')+'</p><p>你的八字'+wx.wx+'性适合：'+wx.career+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">五、成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item">'+info.growth+'</div></div></div>'+
+'<div class="cta-box"><h3>📚 深入了解你的职场命理</h3><p class="cta-desc">加微信备注<b>「职场」</b>，可获取：</p><p class="cta-desc">• 八字大运流年深度分析<br>• 专属职业规划建议<br>• 一对一命理咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
+'</div>'
+}
 initDateSelectors();
     </script>
 </body>
