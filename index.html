@@ -144,7 +144,6 @@ const day=document.getElementById('birthDay').value;
 const hourVal=document.getElementById('birthHour').value||'';
 const gender=document.getElementById('gender').value;
 const calType=document.getElementById('calendarType').value;
-// 时辰转小时（子时=0, 丑时=1...亥时=11），取中间值加30分钟
 const hourMap={'':'12','0':'0','1':'2','2':'4','3':'6','4':'8','5':'10','6':'12','7':'14','8':'16','9':'18','10':'20','11':'22'};
 const hours=hourMap[hourVal]||'12';
 try{
@@ -152,11 +151,14 @@ const params=new URLSearchParams({api_key:'OZmxqkQCzwmVwz9uQKulp2kYE',name:'命�
 const resp=await fetch('https://api.yuanfenju.com/index.php/v1/Bazi/paipan',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:params.toString()});
 const result=await resp.json();
 if(result.errcode===0){
+console.log('API成功:', result.data.detail_info.sizhu.day.tg);
 showResult({mbti,mbtiScore,baziData:result.data,hourVal});
 }else{
+alert('API返回错误: '+result.errmsg);
 showResult({mbti,mbtiScore,baziData:null,hourVal});
 }
 }catch(e){
+alert('网络错误: '+e.message);
 showResult({mbti,mbtiScore,baziData:null,hourVal});
 }
 }
@@ -287,15 +289,9 @@ ${careers.map((c,i)=>`<div class="career-card"><div><span class="career-rank">${
 </div>
 </div>`;
 }else{
-// API失败时降级展示
-const bazi=getBaziInfo(parseInt(document.getElementById('birthYear').value),parseInt(document.getElementById('birthMonth').value),parseInt(document.getElementById('birthDay').value));
-const hourVal=data.hourVal||'';
-const hourDisplay={'':'未知','0':'子时','1':'丑时','2':'寅时','3':'卯时','4':'辰时','5':'巳时','6':'午时','7':'未时','8':'申时','9':'酉时','10':'戌时','11':'亥时'}[hourVal]||'午时';
-const wxColor={'金':'#C9B037','木':'#4CAF50','水':'#2196F3','火':'#FF5722','土':'#795548'};
-const wxIcon={'金':'⚔️','木':'🌳','水':'🌊','火':'🔥','土':'⛰️'};
-const wxCareer={'金':'适合金融、法律、管理、军警等需要决断力的职业','木':'适合教育、文化、设计等需要创造力的职业','水':'适合贸易、传媒、咨询等需要沟通力的职业','火':'适合演艺、公关、营销等需要感染力的职业','土':'适合房地产、建筑、人力资源等需要稳重的职业'};
-baziHtml=`<div class="result-hero"><div class="result-type-badge">${wxIcon[bazi.dayWx]||'🔮'} 日主${bazi.dayGan}（${bazi.dayWx}）</div><div class="result-type-name">你的职场本命</div><div class="result-type-tagline">${bazi.year} ${bazi.month} ${bazi.day} · ${hourDisplay}</div></div><div class="result-body"><div class="result-section"><div class="result-title">性格特质分析</div><div class="result-content"><p>${info.summary}</p><div class="quote-box">"${info.quote}"</div></div></div><div class="result-section"><div class="result-title">命理五行</div><div class="result-content"><p><b style="color:${wxColor[bazi.dayWx]}">日主${bazi.dayGan}属${bazi.dayWx}</b>，${wxCareer[bazi.dayWx]}</p><div class="strength-grid">${info.strengths.map(s=>`<div class="strength-item"><div class="strength-name">${s}</div></div>`).join('')}</div></div></div><div class="result-section"><div class="result-title">职业方向推荐</div>${careers.map((c,i)=>`<div class="career-card"><div><span class="career-rank">${i+1}</span><span class="career-title">${c.title}</span></div><div class="career-reason">${c.reason}</div></div>`).join('')}</div><div class="result-section"><div class="result-title">成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item"><span class="growth-icon">→</span><span>${info.growth}</span></div></div></div></div>`;
-}
+document.getElementById("loading").classList.add("hidden");
+document.getElementById("result").classList.remove("hidden");
+document.getElementById("resultContent").innerHTML="<div style='padding:40px;text-align:center;color:#666;'><h3>⚠️ 网络问题</h3><p>请检查网络后重新测试</p><button onclick='location.reload()' style='margin-top:20px;padding:12px 24px;background:#667eea;color:white;border:none;border-radius:8px;'>重新测试</button></div>";
 document.getElementById('resultContent').innerHTML=baziHtml;
 }
 initDateSelectors();
