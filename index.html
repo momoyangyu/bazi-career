@@ -87,7 +87,7 @@
 <body>
     <div class="container">
         <div id="step1" class="page">
-            <div class="header"><h1>你的职场本命测评</h1><p>用MBTI+心理学视角，找到最适合你的职业方向</p></div>
+            <div class="header"><h1>你的职场本命测评</h1><p>MBTI+八字命理，帮你找到职场本命方向</p></div>
             <div class="card">
                 <div class="step-indicator"><div class="step-dot active"></div><div class="step-dot"></div></div>
                 <div class="section-title">请输入你的出生信息</div>
@@ -210,7 +210,7 @@ var wxCount={'木':0,'火':0,'土':0,'金':0,'水':0};
 var wxMax=Object.keys(wxCount).reduce(function(a,b){return wxCount[a]>=wxCount[b]?a:b});
 var wxWeak=Object.keys(wxCount).reduce(function(a,b){return wxCount[a]<=wxCount[b]?a:b});
 var wxDesc='';
-if(wxMax===wxMap[dayGan])wxDesc='你的命局中'+wxMap[dayGan+'能量较为充沛，日主得令，在表达'+wxMap[dayGan]+'的特质时往往更加自然和从容。';
+if(wxMax===wxMap[dayGan])wxDesc='你的命局中'+wxMap[dayGan]+'能量较为充沛，日主得令，在表达'+wxMap[dayGan]+'的特质时往往更加自然和从容。';
 else wxDesc='你的命局中'+wxMax+'能量较为突出，天生带有'+wxMax+'的特质倾向，这会在你的性格和行为方式中留下深刻的印记。';
 var wxAdvMap={'木':'多接触自然和人文领域，培养灵活性和包容度','火':'多参与社交和表达类活动，让内心的热情有出口','土':'多走出舒适圈，尝试新领域，培养变通能力','金':'适当放松对完美的执念，允许事物有自然的发展节奏','水':'学会专注和坚持，将灵感转化为实际成果'};
 var wxAdvice=wxAdvMap[wxWeak]||'';
@@ -234,7 +234,7 @@ document.getElementById("resultContent").innerHTML=
 '<div class="result-section"><div class="result-title">三、'+geJu+'格局解读</div><div class="result-content">'+geJuInfo.desc+'</div></div>'+
 '<div class="result-section"><div class="result-title">四、适合的职业方向</div><div class="result-content">'+geJuInfo.career+'</div></div>'+
 '<div class="result-section"><div class="result-title">五、成长锦囊</div><div class="growth-box"><div class="growth-item">'+info.growth+'</div></div></div>'+
-'<div class="cta-box"><h3>🌟 命理是一面镜子，帮你看见更深处的自己</h3><p style="font-size:14px;opacity:0.95;margin:12px 0 20px;line-height:1.8">添加微信备注「职场」，获取八字大运流年分析<br>以及一对一职业规划咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
+'<div class="cta-box"><h3>🌟 命理咨询 · 扫码添加</h3><p style='font-size:14px;opacity:0.95;margin:10px 0 16px;line-height:1.9'>添加微信备注「职场」，获取：</p><p style='font-size:14px;line-height:1.9;text-align:left;margin:0 auto;display:inline-block'>✦ 一对一职业规划咨询<br>✦ 奇门决策：事业、财运、人际<br>✦ 八字分析：识己，识人，识运</p><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
 '</div>'
 }
 function calcShishen(dayIdx,otherIdx){
