@@ -249,7 +249,7 @@ if(relation===3)return sameYinYang?'正官':'七杀';
 if(relation===4)return sameYinYang?'正印':'偏印';
 return'未知';
 }
-initDateSelectors();
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initDateSelectors)}else{initDateSelectors()}
     </script>
 </body>
 </html>
