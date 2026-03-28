@@ -152,7 +152,7 @@ var useYear=year;
 if(birthDate<lichunDate)useYear=year-1;
 var yearGan=tg[(useYear-4)%10];
 var yearZhi=dz[(useYear-4)%12];
-var yearGanIdx=(useYear-4)%10;var monthGanStart=(yearGanIdx%5)*2;
+var yearGanIdx=(useYear-4)%10;var monthGanStart=((yearGanIdx%5)*2+2)%10;
 var solarToLunarMonth;
 if(month<2){solarToLunarMonth=12}else if(month===2){solarToLunarMonth=birthDate<lichunDate?12:1}else{solarToLunarMonth=month-1}
 var monthGan=tg[(monthGanStart+solarToLunarMonth-1)%10];
