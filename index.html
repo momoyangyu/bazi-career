@@ -177,64 +177,86 @@ var type=data.mbti;
 var info=mbtiData[type];
 var careers=careerRecommendations[type]||[];
 var bazi=data.baziData;
-if(!bazi){
-document.getElementById("resultContent").innerHTML="<div style='padding:40px;text-align:center;'><p>报告生成失败，请重试</p></div>";
-return
-}
+if(!bazi){document.getElementById("resultContent").innerHTML="<div style='padding:40px;text-align:center;'><p>报告生成失败，请重试</p></div>";return}
 var di=bazi.detail_info.sizhu;
 var wxMap={'甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水'};
 var dayGan=di.day.tg;
-var dayWx=wxMap[dayGan];
-var wx=wxInfo[dayGan]||{wx:'未知',color:'#666',icon:'❓',career:'待定',strengths:[],behavior:''};
+var wx=wxInfo[dayGan]||{wx:'未知',icon:'❓',desc:'',behavior:'',career:'',strengths:[]};
 var bi=bazi.base_info;
 var bzi=bazi.bazi_info.bazi;
 var gender=bi.sex||'乾造';
 var strengthText=info.strengths?info.strengths.slice(0,4).join('、'):'待分析';
 var careerText=careers&&careers.length?careers.slice(0,3).map(function(c){return c.title}).join('、'):'待定';
+var tgArr=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+var dayIdx=tgArr.indexOf(dayGan);
+var yearShi=getShishen(dayIdx,tgArr.indexOf(di.year.tg));
+var monthShi=getShishen(dayIdx,tgArr.indexOf(di.month.tg));
+var hourShi=getShishen(dayIdx,tgArr.indexOf(di.hour.tg));
+var ysi=shishenInfo[yearShi]||shishenInfo[monthShi];
+var msi=shishenInfo[monthShi]||{desc:'',trait:'',career:''};
+var hsi=shishenInfo[hourShi]||shishenInfo[monthShi];
 
-// 计算十神
-var tg=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-var dayIdx=tg.indexOf(dayGan);
-var yearGan=di.year.tg,monthGan=di.month.tg,hourGan=di.hour.tg;
-var yearShi=getShishen(dayIdx,tg.indexOf(yearGan));
-var monthShi=getShishen(dayIdx,tg.indexOf(monthGan));
-var hourShi=getShishen(dayIdx,tg.indexOf(hourGan));
-var shiText=yearShi+'、'+monthShi+'、'+hourShi;
-var shiInfo=shishenInfo[monthShi]||shishenInfo[yearShi]||{desc:'',career:'',trait:''};
+// 统计五行
+var wxCount={'木':0,'火':0,'土':0,'金':0,'水':0};
+[di.year.tg,di.year.dz,di.month.tg,di.month.dz,di.day.tg,di.day.dz,di.hour.tg,di.hour.dz].forEach(function(z){
+var w=wxMap[z];
+if(w)wxCount[w]++;
+});
+var wxMax=Object.keys(wxCount).reduce(function(a,b){return wxCount[a]>=wxCount[b]?a:b});
+var wxDesc=wxMax+'能量较为突出，你天生带有'+wxMax+'的特质倾向。';
+if(wxMax===wxMap[dayGan])wxDesc='日主'+wxMax+'得令，'+wxMax+'能量较为充沛，你在表达'+wxMax+'的特质时往往更加自然和自如。';
+var wxWeak=Object.keys(wxCount).reduce(function(a,b){return wxCount[a]<=wxCount[b]?a:b});
+var wxAdvice='';
+var wxAdvMap={'木':'多接触自然和人文领域，培养灵活性和包容度','火':'多参与社交和表达类活动，让内心的热情有出口','土':'多走出舒适圈，尝试新领域，培养变通能力','金':'适当放松对完美的执念，允许事物有自然的发展节奏','水':'学会专注和坚持，将灵感转化为实际的成果'};
+wxAdvice=wxAdvMap[wxWeak]||'';
+
+// 十神综合分析
+var shenArr=[yearShi,monthShi,hourShi];
+var hasOutput=shenArr.some(function(s){return s==='食神'||s==='伤官'});
+var hasIn=shenArr.some(function(s){return s==='正印'||s==='偏印'});
+var hasCai=shenArr.some(function(s){return s==='正财'||s==='偏财'});
+var hasGuan=shenArr.some(function(s){return s==='正官'||s==='七杀'});
+var shenSummary='';
+if(hasOutput)shenSummary+='你的八字中带有食伤星，这意味着你内心深处有着丰富的创造力和表达欲。你往往善于发现生活中的细节之美，在需要灵感和创意的工作中更容易如鱼得水。';
+if(hasIn)shenSummary+='同时，印星的加持赋予了你较强的学习吸收能力和内在的安全感。你可能比较擅长从书籍、课程或导师那里获取知识，也容易在关键时刻得到贵人相助。';
+if(hasCai)shenSummary+='财星的出现暗示着你在物质世界和现实层面有着不错的感知力，往往能够在需要实际操作和资源整合的领域发挥优势。';
+if(hasGuan)shenSummary+='而官杀星的存在，则意味着你骨子里有一股不服输的劲头，面对压力和挑战时反而更容易激发出潜力。';
+if(!shenSummary)shenSummary='你的八字十神配置较为均衡，这意味着你在不同领域都有一定的适应力和发展空间，关键在于找到最让你有热情的方向。';
+
+var mbtiWx='';
+if(type.charAt(0)==='E')mbtiWx+='作为一个外倾型的人，你从与他人的互动中获取能量，在团队协作和对外沟通中往往表现得更加出色。';
+else mbtiWx+='作为一个内倾型的人，你更倾向于从独处和深度思考中获得力量，在需要专注和独立判断的工作中往往更能发挥潜力。';
+if(type.charAt(1)==='N')mbtiWx+='你善于捕捉事物之间的联系和可能性，比起具体细节，你更关注宏观的方向和意义。';
+else mbtiWx+='你注重事实和细节，在执行力方面有着天然的优势，脚踏实地的做事风格让你在务实型岗位上格外可靠。';
+if(type.charAt(2)==='T')mbtiWx+='做决策时，你更依赖理性分析和逻辑推演，这让你在需要客观判断的场合中保持清醒。';
+else mbtiWx+='你内心细腻，善于共情，在做决策时会自然地考虑到他人的感受和影响。';
+if(type.charAt(3)==='J')mbtiWx+='你偏好有计划、有秩序的工作方式，擅长将复杂任务拆解并系统化推进。';
+else mbtiWx+='你更享受灵活自由的工作节奏，在变化多端的环境中反而能激发出最好的状态。';
 
 document.getElementById("resultContent").innerHTML=
-'<div class="result-hero"><div class="result-type-badge">'+wx.icon+' 日主'+dayGan+'（'+wx.wx+'）</div><div class="result-type-name">'+info.name+'</div><div class="result-type-tagline">'+type+' · '+gender+' · '+bzi.join(' ')+'</div></div>'+
+'<div class="result-hero"><div class="result-type-badge">'+wx.icon+' '+dayGan+wx.wx+'日主</div><div class="result-type-name">'+info.name+' · '+type+'</div><div class="result-type-tagline">'+gender+' '+bzi.join(' ')+'</div></div>'+
 '<div class="result-body">'+
-'<div class="result-section"><div class="result-title">一、性格特质</div><div class="result-content"><p>'+info.summary+'</p><p style="margin-top:10px"><b>核心优势：</b>'+strengthText+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">二、五行能量</div><div class="result-content"><p><b>日主'+dayGan+'属'+wx.wx+'</b>，'+wx.desc+'</p><p style="margin-top:8px">'+wx.behavior+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">三、十神配置</div><div class="result-content"><p><b>天干十神：</b>年柱'+yearShi+'、月柱'+monthShi+'、时柱'+hourShi+'</p><p style="margin-top:8px">'+shiInfo.desc+'</p><p style="margin-top:6px"><b>特质：</b>'+shiInfo.trait+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">四、职业方向</div><div class="result-content"><p><b>MBTI推荐：</b>'+careerText+'</p><p style="margin-top:8px"><b>五行'+wx.wx+'性适合：</b>'+wx.career+'</p><p style="margin-top:8px"><b>十神适合：</b>'+shiInfo.career+'</p></div></div>'+
-'<div class="result-section"><div class="result-title">五、成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item">'+info.growth+'</div></div></div>'+
-'<div class="cta-box"><h3>🌟 想深入了解你的职场命理？</h3><p style="font-size:14px;opacity:0.95;margin:12px 0 20px;line-height:1.8">添加微信，获取八字大运流年分析<br>一对一职业规划咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><p style="font-size:12px;opacity:0.8;margin-bottom:12px">备注「职场」</p><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
+'<div class="result-section"><div class="result-title">一、性格画像</div><div class="result-content">'+info.summary+'<p style="margin-top:12px">'+mbtiWx+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">二、五行能量图谱</div><div class="result-content"><p>'+wxDesc+'</p><p style="margin-top:10px">'+wx.behavior+'</p>'+wxAdvice?'<p style="margin-top:10px;color:#764ba2">💡 值得关注的是，你的'+wxWeak+'能量相对不足。'+wxAdvice+'，这会让你的能量更加平衡。</p>':''+'</div></div>'+
+'<div class="result-section"><div class="result-title">三、十神格局解读</div><div class="result-content"><p><b>天干十神配置：</b>'+yearShi+'（年）· '+monthShi+'（月）· '+hourShi+'（时）</p><p style="margin-top:12px">'+shenSummary+'</p></div></div>'+
+'<div class="result-section"><div class="result-title">四、职业天赋与方向</div><div class="result-content"><p>综合你的性格特质与命理格局，以下几个方向值得你重点关注：</p><p style="margin-top:8px"><b>🎯 MBTI维度：</b>'+careerText+'</p><p style="margin-top:8px"><b>🌿 五字维度：</b>'+wx.career+'</p><p style="margin-top:8px"><b>⚡ 十神维度：</b>'+msi.career+'</p><p style="margin-top:12px;font-size:13px;color:#888">当然，这些只是基于你先天特质的分析参考，最终的职业选择还需要结合你的兴趣、经验和环境来综合考虑。</p></div></div>'+
+'<div class="result-section"><div class="result-title">五、成长锦囊</div><div class="growth-box"><div class="growth-item">'+info.growth+'</div></div></div>'+
+'<div class="cta-box"><h3>🌟 命理是一面镜子，帮你看见更深处的自己</h3><p style="font-size:14px;opacity:0.95;margin:12px 0 20px;line-height:1.8">添加微信备注「职场」，获取八字大运流年分析<br>以及一对一职业规划咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
 '</div>'
 }
 function getShishen(dayIdx,otherIdx){
 var wxIdx=Math.floor(dayIdx/2);
 var otherWxIdx=Math.floor(otherIdx/2);
-var sameWx=wxIdx===otherWxIdx;
 var sameYinYang=(dayIdx%2)===(otherIdx%2);
-var dayYin=dayIdx%2;
-if(otherWxIdx===wxIdx){
-return sameYinYang?'比肩':'劫财';
-}
+if(otherWxIdx===wxIdx){return sameYinYang?'比肩':'劫财'}
 var wxOrder=[0,1,4,2,3];
 var dayWxPos=wxOrder.indexOf(wxIdx);
 var otherWxPos=wxOrder.indexOf(otherWxIdx);
 var diff=(otherWxPos-dayWxPos+5)%5;
-if(diff===1){
-return sameYinYang?'食神':'伤官';
-}else if(diff===2){
-return sameYinYang?'正财':'偏财';
-}else if(diff===3){
-return sameYinYang?'正官':'七杀';
-}else if(diff===4){
-return sameYinYang?'正印':'偏印';
-}
+if(diff===1)return sameYinYang?'食神':'伤官';
+if(diff===2)return sameYinYang?'正财':'偏财';
+if(diff===3)return sameYinYang?'正官':'七杀';
+if(diff===4)return sameYinYang?'正印':'偏印';
 return'未知';
 }
 initDateSelectors();
