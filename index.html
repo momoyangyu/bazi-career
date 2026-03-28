@@ -202,7 +202,7 @@ var dzBenQi={'子':'癸','丑':'己','寅':'甲','卯':'乙','辰':'戊','巳':'
 var monthZhi=di.month.dz;
 var monthBQ=dzBenQi[monthZhi]||'甲';
 var geJu=calcShishen(dayIdx,tgArr.indexOf(monthBQ));
-var geJuInfo=geJuData[geJu]||geJuData['正印'];
+var geJuInfo=shishenInfo[geJu]||geJuData['正印'];
 
 // 五行统计
 var wxCount={'木':0,'火':0,'土':0,'金':0,'水':0};
