@@ -190,7 +190,7 @@ var bi=bazi.base_info;
 var bzi=bazi.bazi_info.bazi;
 var gender=bi.sex||'乾造';
 var strengthText=info.strengths?info.strengths.slice(0,4).join('、'):'待分析';
-var careerText=careers?careers.slice(0,3).join('、'):'待定';
+var careerText=careers&&careers.length?careers.slice(0,3).map(function(c){return c.title}).join('、'):'待定';
 document.getElementById("resultContent").innerHTML=
 '<div class="result-hero"><div class="result-type-badge">'+wx.icon+' 日主'+dayGan+'（'+wx.wx+'）</div><div class="result-type-name">'+info.name+'</div><div class="result-type-tagline">'+type+' · '+gender+' · '+bzi.join(' ')+'</div></div>'+
 '<div class="result-body">'+
@@ -198,7 +198,7 @@ document.getElementById("resultContent").innerHTML=
 '<div class="result-section"><div class="result-title">二、八字能量配置</div><div class="result-content"><p><b>日主'+dayGan+'属'+wx.wx+'</b>，'+wx.desc+'</p><p style="margin-top:8px">'+wx.behavior+'</p></div></div>'+
 '<div class="result-section"><div class="result-title">三、职业天赋与方向</div><div class="result-content"><p><b>MBTI推荐：</b>'+careerText+'</p><p style="margin-top:8px"><b>八字'+wx.wx+'性适合：</b>'+wx.career+'</p></div></div>'+
 '<div class="result-section"><div class="result-title">四、成长建议</div><div class="growth-box"><div class="growth-title">💪 提升方向</div><div class="growth-item">'+info.growth+'</div></div></div>'+
-'<div class="cta-box"><h3>📚 深入了解你的职场命理</h3><p class="cta-desc">加微信备注<b>「职场」</b>，可获取：</p><p class="cta-desc">• 八字大运流年深度分析<br>• 专属职业规划建议<br>• 一对一命理咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
+'<div class="cta-box"><h3>🌟 想深入了解你的职场命理？</h3><p style="font-size:14px;opacity:0.95;margin:12px 0 20px;line-height:1.8">添加微信，获取八字大运流年分析<br>一对一职业规划咨询</p><div class="wechat-id">Yuxiaoxian_GX</div><p style="font-size:12px;opacity:0.8;margin-bottom:12px">备注「职场」</p><button class="copy-btn" onclick="copyWechat()">复制微信号</button></div>'+
 '</div>'
 }
 initDateSelectors();
