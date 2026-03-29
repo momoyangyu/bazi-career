@@ -102,7 +102,7 @@
                 </div>
                 <div class="form-group"><label class="form-label">历法类型</label><select class="form-input" id="calendarType"><option value="1">公历（阳历）</option><option value="0">农历（阴历）</option></select></div>
                 <p class="tip">💡 时辰越准确，测评结果越精准</p>
-                <button class="btn" onclick="goToStep2()">开始测评</button>
+                <button class="btn" id="startBtn">开始测评</button>
             </div>
         </div>
         <div id="step2" class="page hidden">
@@ -249,11 +249,19 @@ if(relation===3)return sameYinYang?'正官':'七杀';
 if(relation===4)return sameYinYang?'正印':'偏印';
 return'未知';
 }
-// 立即执行初始化（不等待事件）
+// 立即执行初始化
 (function(){
-  console.log('立即初始化日期选择器...');
   initDateSelectors();
-  console.log('初始化完成');
+  var btn = document.getElementById('startBtn');
+  if(btn){
+    btn.addEventListener('click', function(){
+      goToStep2();
+    });
+    btn.addEventListener('touchend', function(e){
+      e.preventDefault();
+      goToStep2();
+    });
+  }
 })();
     </script>
 </body>
